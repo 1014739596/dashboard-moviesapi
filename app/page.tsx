@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 
@@ -31,6 +30,9 @@ export default function Home() {
       try {
         const res = await fetch("https://devsapihub.com/api-movies");
         const data = await res.json();
+
+        console.log("Películas:", data); // 👈 útil para debug
+
         setMovies(data);
       } catch (error) {
         console.error("Error cargando películas", error);
@@ -57,31 +59,38 @@ export default function Home() {
 
       {/* 🎥 Películas */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {movies.map((movie: any) => (
+        {movies.map((movie: any, index: number) => (
           <div
-            key={movie.id}
+            key={movie.id || index}
             className="bg-white dark:bg-zinc-900 rounded-xl shadow-md overflow-hidden hover:scale-105 transition-transform"
           >
-            <Image
-              src={movie.image}
-              alt={movie.title}
-              width={400}
-              height={500}
+            {/* 🖼 IMAGEN CORREGIDA */}
+            <img
+              src={
+                movie.image ||
+                movie.poster ||
+                movie.img ||
+                movie.image_url ||
+                "https://via.placeholder.com/300x400?text=No+Image"
+              }
+              alt={movie.title || "Película"}
               className="w-full h-60 object-cover"
             />
 
             <div className="p-4">
               <h2 className="text-lg font-semibold text-black dark:text-white">
-                {movie.title}
+                {movie.title || "Sin título"}
               </h2>
 
               <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-2">
-                {movie.description}
+                {movie.description || "Sin descripción"}
               </p>
 
-              <p className="text-sm mt-2 font-medium text-blue-600">
-                ⭐ {movie.rating}
-              </p>
+              {movie.rating && (
+                <p className="text-sm mt-2 font-medium text-blue-600">
+                  ⭐ {movie.rating}
+                </p>
+              )}
             </div>
           </div>
         ))}
